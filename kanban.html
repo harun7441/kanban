@@ -1,0 +1,390 @@
+<html>
+<head>
+
+    <title>Kanban Board</title> 
+
+                <!-- ****************** CSS KODLARI ******************-->
+
+<style>
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    background: black;
+    color: white;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+      text-align: center;
+}
+
+.board {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.list {
+    background: #2c2c2c;
+    padding: 10px;
+    border-radius: 10px;
+    width: 250px;
+}
+
+.list h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.cards {
+    min-height: 200px;
+}
+
+.card {
+    background: #444;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    cursor: grab;
+}
+
+.card.dragging {
+    opacity: 0.5;
+ }
+
+.button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+ 
+
+
+
+.kanban-card {
+  padding: 16px;
+  margin: 8px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+}
+.todo { background-color: #f39c12; }
+.doing { background-color: #3498db; }
+.done { background-color: #2ecc71; }
+    </style>
+
+</head>
+<body>
+
+    <h2>Kanban Board</h2>
+
+
+    <div class="board">
+        <div class="list" id="Backlog">
+            <!-- Backlog listemiz -->
+            <h2>Backlog</h2>
+            <div class="cards">
+
+            </div>
+            <button class="button" onclick="addCard('Backlog')">Add Card</button>     
+        </div>
+
+            <!-- To Do listemiz -->
+        <div class="list" id="todo">
+            <h2>To Do</h2>
+            <div class="cards">
+                
+            </div>
+             <button class="button" onclick="addCard('todo')">Add Card</button>     
+        </div>
+
+            <!-- In Progress listemiz -->
+        <div class="list" id="inprogress">
+            <h2>In Progress</h2>
+            <div class="cards">
+            </div>
+             <button class="button" onclick="addCard('inprogress')">Add Card</button>    
+        </div>
+
+            <!-- Designed listemiz -->
+        <div class="list" id="Designed">
+            <h2>Designed</h2>
+            <div class="cards">
+                <div class="card" draggable="true">Task 4</div>
+            </div>
+                <button class="button" onclick="addCard('Designed')">Add Card</button>
+        </div>
+
+
+
+
+        
+            <!-- ****************** JS KODLARI ******************-->
+
+
+
+<script>
+    function enableDrag(card) {
+      card.addEventListener("dragstart", () => {
+        card.classList.add("dragging");
+      });
+      card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+      });
+    }
+
+    document.querySelectorAll(".card").forEach(enableDrag);
+
+    const lists = document.querySelectorAll(".cards");
+
+    lists.forEach(list => {
+      list.addEventListener("dragover", e => {
+        e.preventDefault();
+        const draggingCard = document.querySelector(".dragging");
+        if (draggingCard) {
+          list.appendChild(draggingCard);
+          // Kart taşındığında da kaydet
+          saveCards();
+        }
+      });
+    });
+
+    function addCard(listId) {
+      // Kart ekleme modal'ı oluştur
+      const cardModal = document.createElement("div");
+      cardModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      `;
+
+      const cardForm = document.createElement("div");
+      cardForm.style.cssText = `
+        background: #2c2c2c;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        min-width: 400px;
+      `;
+
+      cardForm.innerHTML = `
+        <h3 style="margin-bottom: 20px; color: white;">Yeni Kart Ekle</h3>
+        
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; color: white; text-align: left;">Kart İsmi:</label>
+          <input type="text" id="cardTitle" placeholder="Kart ismini girin..." style="
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #444;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+          " />
+        </div>
+
+        <div style="margin-bottom: 25px;">
+          <label style="display: block; margin-bottom: 12px; color: white; text-align: left;">Kart Rengi:</label>
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <div class="color-option" data-color="#f39c12" style="width: 50px; height: 50px; background: #f39c12; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;"></div>
+            <div class="color-option" data-color="#3498db" style="width: 50px; height: 50px; background: #3498db; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;"></div>
+            <div class="color-option" data-color="#2ecc71" style="width: 50px; height: 50px; background: #2ecc71; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;"></div>
+            <div class="color-option" data-color="#e74c3c" style="width: 50px; height: 50px; background: #e74c3c; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;"></div>
+            <div class="color-option" data-color="#9b59b6" style="width: 50px; height: 50px; background: #9b59b6; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;"></div>
+            <div class="color-option" data-color="#1abc9c" style="width: 50px; height: 50px; background: #1abc9c; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;"></div>
+            <div class="color-option" data-color="#f1c40f" style="width: 50px; height: 50px; background: #f1c40f; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;"></div>
+            <div class="color-option" data-color="#34495e" style="width: 50px; height: 50px; background: #34495e; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;"></div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button id="createCard" style="
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+          ">Kartı Oluştur</button>
+          <button id="cancelCard" style="
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+          ">İptal</button>
+        </div>
+      `;
+
+      cardModal.appendChild(cardForm);
+      document.body.appendChild(cardModal);
+
+      let selectedColor = "#444"; // Varsayılan renk
+
+      // Input'a odaklan
+      const titleInput = document.getElementById('cardTitle');
+      titleInput.focus();
+
+      // Renk seçimi event listener'ları
+      const colorOptions = cardForm.querySelectorAll('.color-option');
+      colorOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          // Önceki seçimi kaldır
+          colorOptions.forEach(opt => opt.style.border = "3px solid transparent");
+          
+          // Yeni seçimi işaretle
+          option.style.border = "3px solid white";
+          selectedColor = option.dataset.color;
+        });
+
+        // Hover efekti
+        option.addEventListener('mouseenter', () => {
+          if (option.style.border !== "3px solid white") {
+            option.style.transform = "scale(1.1)";
+          }
+        });
+        option.addEventListener('mouseleave', () => {
+          option.style.transform = "scale(1)";
+        });
+      });
+
+      // Kartı oluştur butonu
+      document.getElementById('createCard').addEventListener('click', () => {
+        const cardTitle = titleInput.value.trim();
+        if (!cardTitle) {
+          alert("Lütfen kart ismini girin!");
+          titleInput.focus();
+          return;
+        }
+
+        const newCard = document.createElement("div");
+        newCard.className = "card";
+        newCard.style.backgroundColor = selectedColor;
+        newCard.draggable = true;
+        
+        // Kart içeriği ve silme butonu
+        newCard.innerHTML = `
+          <span class="card-text">${cardTitle}</span>
+          <button class="delete-btn" onclick="deleteCard(this)">×</button>
+        `;
+
+        enableDrag(newCard);
+        document.getElementById(listId).querySelector('.cards').appendChild(newCard);
+        
+        // Kartı localStorage'a kaydet
+        saveCards();
+        
+        document.body.removeChild(cardModal);
+      });
+
+      // Enter tuşu ile kartı oluştur
+      titleInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          document.getElementById('createCard').click();
+        }
+      });
+
+      // İptal butonu
+      document.getElementById('cancelCard').addEventListener('click', () => {
+        document.body.removeChild(cardModal);
+      });
+
+      // Modal dışına tıklayınca kapat
+      cardModal.addEventListener('click', (e) => {
+        if (e.target === cardModal) {
+          document.body.removeChild(cardModal);
+        }
+      });
+    }
+
+    // Kartları kaydet
+    function saveCards() {
+      const boardData = {};
+      const lists = ['Backlog', 'todo', 'inprogress', 'Designed'];
+      
+      lists.forEach(listId => {
+        const cards = document.getElementById(listId).querySelectorAll('.card');
+        boardData[listId] = [];
+        
+        cards.forEach(card => {
+          boardData[listId].push({
+            text: card.textContent,
+            color: card.style.backgroundColor || '#444'
+          });
+        });
+      });
+      
+      localStorage.setItem('kanbanBoard', JSON.stringify(boardData));
+    }
+
+    function loadCards() {
+      const savedData = localStorage.getItem('kanbanBoard');
+      if (!savedData) return;
+      
+      const boardData = JSON.parse(savedData);
+      
+      Object.keys(boardData).forEach(listId => {
+        const cardsContainer = document.getElementById(listId).querySelector('.cards');
+        // Mevcut kartları temizle (varsayılan olanlar hariç)
+        cardsContainer.innerHTML = '';
+        
+        boardData[listId].forEach(cardData => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.textContent = cardData.text;
+          card.draggable = true;
+          card.style.backgroundColor = cardData.color;
+          
+          enableDrag(card);
+          cardsContainer.appendChild(card);
+        });
+      });
+    }
+
+    // Kart silme özelliği ekle
+    function addDeleteFeature() {
+      document.addEventListener('contextmenu', (e) => {
+        if (e.target.classList.contains('card')) {
+          e.preventDefault();
+          
+          if (confirm('Bu kartı silmek istediğinizden emin misiniz?')) {
+            e.target.remove();
+            saveCards();
+          }
+        }
+      });
+    }
+
+    // Sayfa yüklendiğinde kartları yükle
+    window.addEventListener('load', () => {
+      loadCards();
+      addDeleteFeature();
+    });
+</script>
+
+
+
+
+</body>
+</html>
